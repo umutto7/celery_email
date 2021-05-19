@@ -1,0 +1,35 @@
+
+<!DOCTYPE html>
+<html>
+    <body>
+        <br>
+
+        <h2>CaseTracker Weekly Report</h2>
+       
+
+        <h2>Deadline Davalar Details:</h2>
+
+        <table>
+
+            <thead>
+                <tr>
+                    <th>Index</th>
+                    <th>Deadline1</th>
+                    <th>Deadline2</th>
+                    <th>Deadline3</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for dava in davalar %}
+                    <tr>
+                        <td>{{ dava.index }}</td>
+                        <td>{{ dava.deadline1 }}</td>
+                        <td>{{ dava.deadline2 }}</td>
+                        <td>{{ dava.deadline3 }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </body>
+</html>
