@@ -4,15 +4,8 @@ from django.core.mail import BadHeaderError, send_mail, EmailMessage
 from django.template import Context
 from django.template.loader import get_template
 from datetime import date
-from django.forms.models import model_to_dict
-from rest_framework import serializers
 
 from .models import Dava
-
-class DavaSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Dava
-        fields = "__all__"
 
 
 @shared_task
@@ -47,16 +40,15 @@ def send_custom_email():
     Send email to managers with weekly report info.
     # TODO:for executing multiple times use eval for some date range in scheduled task
     """
-    today = date.today()
-    davalar = Dava.objects.filter(deadline1__lt = today)
+    #davalar = Dava.objects.filter(deadline1__lt = today)
     #dava_dict = {'davalar':list(Dava.objects.filter(deadline1__lt = today))}
+    today = date.today()
     template = get_template("posta/mail.html")
 
-    # TODO:build the logic for sending the mails to related managers 
     for manager in Dava.objects.values_list('manager_mail', flat=True).distinct():
+   
+        if davalar := Dava.objects.filter(manager_mail=manager, deadline1__lt = today):
 
-        davalar = Dava.objects.filter(manager_mail=manager, deadline1__lt = today)
-        if davalar:
             dava_dict = {'davalar':list(davalar)}
             message = template.render(dava_dict)
 
@@ -67,6 +59,11 @@ def send_custom_email():
                 to=[manager]
             )
             mail.content_subtype = "html"
+
+            try:
+                mail.send()
+            except BadHeaderError:
+                print('Invalid header found.')
 
         #return mail.send()
 
